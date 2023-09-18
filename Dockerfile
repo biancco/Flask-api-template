@@ -12,4 +12,4 @@ WORKDIR /app
 
 RUN pip3 --no-cache-dir install -r requirements.txt
 
-CMD gunicorn wsgi:application -b 0.0.0.0:${CONTAINER_PORT} --timeout ${TIMEOUT} --workers ${WORKERS}
+CMD gunicorn run:app -b 0.0.0.0:${CONTAINER_PORT} --timeout ${TIMEOUT} --workers ${WORKERS} --threads {THREADS}

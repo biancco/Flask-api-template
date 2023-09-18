@@ -1,0 +1,25 @@
+version: '3.8'
+services:
+  main-app:
+    container_name: main_app
+    restart: always
+    command: gunicorn --config gunicorn-cfg.py run:app
+    build: .
+    volumes:
+      - ./run.py:/src/run.py
+      - ./gunicorn-cfg.py:/src/gunicorn-cfg.py
+      - ./app:/src/app
+    working_dir: "/src"
+    environment:
+      - TZ=Asia/Seoul
+    ports:
+      - 5000:5000
+    # GPU Access
+    deploy:
+      resources:
+        reservations:
+          devices:
+          - driver: nvidia
+            device_ids: ['0']
+            capabilities: [gpu]
+

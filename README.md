@@ -6,14 +6,15 @@ API Server 구축을 위해  모델  모듈 수정만으로 서비스 가능한 
 
 ```bash
 flask_api/
-├── .env
 ├── Dockerfile
 ├── README.md
 ├── app
 │   ├── __init__.py
 │   ├── models.py
+│   ├── config.py
 │   └── templates.py
 ├── logs/
+├── gunicorn-cfg.py
 ├── requirements.txt
 ├── run.py
 └── wsgi.py
@@ -21,14 +22,15 @@ flask_api/
 
 | filep              | exp                                             |
 | :----------------- | :---------------------------------------------- |
-| `.env`             | 서버에서 사용될 환경변수 파라미터 파일          |
 | `Dockerfile`       | docker 실행 시 사용될 Dockerfile                |
+| `docker-compose.yml`       | docker compose 실행시 활용할 configuration file  |
 | `app/__init__.py`  | flask app initiation {logging, blueprint, CORS} |
 | `app/models.py`    | model load & prediction method module           |
 | `app/templates.py` | api template module                             |
 | `logs/`            | logs directory                                  |
 | `requirements.txt` | packages list                                   |
-| `wsgi.py`          | excute file for the gunicorn                    |
+| `run.py`          | excute file for the gunicorn                    |
+| `gunicorn-cfg.py`          | gunicorn configuration file                    |
 
 
 
@@ -43,7 +45,7 @@ pip install -r requirements.txt
 2. flask app 실행
 
 ```bash
- flask run --host 0.0.0.0 --port=5000 --debug --no-reload
+flask --app run run --host 0.0.0.0 --port=5000 --debug --no-reload
 ```
 
 ※ 개발 시 유의
@@ -51,6 +53,24 @@ pip install -r requirements.txt
  빠른 수정을 위하여 `--no-reload`옵션을 삭제 가능 하나 Werkzeug reloader는 코드가 변경될 때마다 해당 프로세스를 다시 시작할 수 있도록 하위 프로세스를 생성. 따라서 두개의 프로세스가 생성되는데, 하위 프로세스에서 모델 로드 시 GPU 메모리를 초과할 수 있으므로 모델 크기를 고려하여 `--no-reload` 옵션을 사용할 것 
 
 
+## Debug mode (Docker compose)
+1. docker compose 명령어를 통하여 실행
+```bash
+docker compose up
+```
+
+2. 개발이 완료되었을 경우 compose down
+```bash
+docker compose down
+```
+
+※ 개발 시 유의
+코드를 수정할경우 현재 설정해놓은 gunicorn-cfg 상으로는 자동으로 재실행되나, 
+package requirement를 바꿀 경우 docker image를 재빌드 해야하므로 `--build` flag를 주어 실행
+```bash
+docker compose up --build
+```
+docker compose에서 활용할 GPU 설정시 [link](https://docs.docker.com/compose/gpu-support/)참조
 
 ## Build and Run docker
 
@@ -59,6 +79,16 @@ Directory : `flask_api_templates/.`
 #### Build 
 
 ※ 각 호스트 환경에 알맞은 도커 이미지를 위해 Dockerfile 수정 필요 [[link](# .Dockerfile)] 
+
+※ environment variable을 docker 실행시 넘겨주지 않고 `gunicorn-cfg`를 활용하여 docker를 실행하려면 
+`Dockerfile`의 
+```dockerfile
+CMD gunicorn run:app -b 0.0.0.0:${CONTAINER_PORT} --timeout ${TIMEOUT} --workers ${WORKERS} --threads {THREADS}
+# 을
+CMD gunicorn --config gunicorn-cfg.py run:app
+# 로 변경하세요.
+```
+
 
 > ##### docker build -t <span style='background-color: #FEE1E8'>[name]</span> <span style='background-color: #FFD3B0'>[Dockerfile]</span>
 >
@@ -197,7 +227,8 @@ $ sudo systemctl restart docker
 CONTAINER_PORT=5000 	# 컨테이너 내에서 동작할 gunicorn port*
 TIMEOUT=600				# gunicorn timeout
 LOG_FILE=logs/app.log	# log file 
-WORKERS=3				# 실행시킬 gunicorn process 수
+WORKERS=1				# 실행시킬 gunicorn process 수
+THREADS=1				# 실행시킬 gunicorn thread 수
 ```
 
 ※ WORKERS : 프로세스의 개수는 cpu core 및 GPU memory, utilize를 고려하여 지정
