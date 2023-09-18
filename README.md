@@ -24,6 +24,7 @@ flask_api/
 | `Dockerfile`       | docker 실행 시 사용될 Dockerfile                |
 | `docker-compose.yml`       | docker compose 실행시 활용할 configuration file  |
 | `app/__init__.py`  | flask app initiation {logging, blueprint, CORS} |
+| `app/config.py`    | the app configuration file           |
 | `app/models.py`    | model load & prediction method module           |
 | `app/templates.py` | api template module                             |
 | `logs/`            | logs directory                                  |
