@@ -16,8 +16,7 @@ flask_api/
 ├── logs/
 ├── gunicorn-cfg.py
 ├── requirements.txt
-├── run.py
-└── wsgi.py
+└── run.py
 ```
 
 | filep              | exp                                             |
