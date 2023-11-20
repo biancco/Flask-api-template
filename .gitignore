@@ -2,7 +2,7 @@
 *.pem
 *.cert
 *.crt
-data
+weights
 db_data
 tmp
 __pycache__
@@ -19,10 +19,12 @@ __pycache__/
 *.db
 *.sqlite3
 *.log
+*.out
 
 # venv
 env
 venv
+.vscode/
 
 # other
 .DS_Store

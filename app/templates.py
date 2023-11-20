@@ -11,6 +11,7 @@ from flask import (
 )
 from PIL import Image
 from .models import SumModel, ObjectDetector, DepthEstimation, TTSModel, STTModel
+from .k_fashion_detection.detect_model_hold import KF_Detector
 
 blueprint=Blueprint('prediction',
              __name__,
@@ -18,7 +19,8 @@ blueprint=Blueprint('prediction',
 )
 
 sum_model = SumModel(device="cuda")
-od_model = ObjectDetector(device="cuda")
+# od_model = ObjectDetector(device="cuda")
+od_model = KF_Detector(device="cuda")
 de_model = DepthEstimation(device="cuda")
 tts_model = TTSModel(device="cuda")
 stt_model = STTModel(device="cuda")
@@ -60,11 +62,16 @@ def object_detection():
         # read data
         data = json.load(request.files['data'])
         
+        # [('dog', [0.21, 64.61, 383.16, 494.14], 0.999), ('dog', [328.2, 125.86, 714.74, 461.77], 0.995)]
         # read image
         uploaded_file = request.files['image']
         file_content = uploaded_file.read()
         image = Image.open(io.BytesIO(file_content))
         preds = od_model.predict(image)
+        
+        # 추론 결과를 시각화하려면 아래 사용 (저장위치 : k_fashion_detection/runs/server)
+        # preds = od_model.predict(image, nosave=False)
+
         return jsonify(preds), 200
     except Exception as e:
         return f"Error: {str(e)}\n\n{object_detection.__doc__}"

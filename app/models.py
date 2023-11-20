@@ -36,8 +36,8 @@ class SumModel:
             
         decoded_outputs = [self.tokenizer.decode(output, skip_special_tokens=True) for output in outputs]
         return decoded_outputs[0]
-    
-    
+
+
 from transformers import DetrImageProcessor, DetrForObjectDetection
 from PIL import Image
 

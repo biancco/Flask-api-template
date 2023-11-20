@@ -1,6 +1,8 @@
 from flask import Flask
 import logging, sys, os 
 from flask_cors import CORS
+import time
+from time import localtime, strftime
 
 def register_blueprints(app):
     from . import templates
@@ -9,9 +11,14 @@ def register_blueprints(app):
 
 def register_logger(app):
     # set logger
-    gunicorn_logger = logging.getLogger('gunicorn.error')
-    app.logger.handlers = gunicorn_logger.handlers
-    app.logger.setLevel(gunicorn_logger.level)
+    t_local = localtime(time.time())
+    time_format = '%Y-%m-%d_%H:%M:%S'
+    time_str = strftime(time_format,t_local)
+        
+    # gunicorn_logger = logging.getLogger('gunicorn.error')
+    logging.basicConfig(filename=f'logs/{time_str}.log', level=logging.DEBUG)
+    # app.logger.handlers = gunicorn_logger.handlers
+    # app.logger.setLevel(gunicorn_logger.level)
 
 
 def create_app(config):

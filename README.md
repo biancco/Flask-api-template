@@ -131,7 +131,8 @@ CMD gunicorn --config gunicorn-cfg.py run:app
 > - image : build한 image
 >
 > ~~~bash
-> docker run -it --rm -d -p 5000:5000 --gpus '"device=0"' --env-file .env -v ./logs:/app/logs --name flaskAPI flask_image
+<!-- > docker run -it --rm -d -p 5000:5000 --gpus '"device=0"' --env-file .env -v $PWD/logs:/app/logs -v /etc/localtime:/etc/localtime --name flaskAPI flask_image bash -->
+> docker run -it --rm -d -p 5000:5000 --gpus '"device=0"' --env-file .env -v $PWD:/app -v /etc/localtime:/etc/localtime --name flaskAPI flask_image bash
 > ~~~
 
 

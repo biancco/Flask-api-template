@@ -22,4 +22,4 @@ if DEBUG:
     app.logger.info('Page Compression = ' + 'FALSE' if DEBUG else 'TRUE' )
 
 if __name__=='__main__':
-    app.run()
+    app.run(debug=True)
