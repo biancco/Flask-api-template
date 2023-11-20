@@ -2,6 +2,13 @@
 
 API Server 구축을 위해  모델  모듈 수정만으로 서비스 가능한 flask api template 제공
 
+## Notes
+
+현재 OD 모델 API 구현 완료했으나 모델 자체의 문제로 일부 사진의 경우 추론 시 모델이 제대로 동작하지 않는 경우가 있음.
+
+test_od.py 실행 시 -> 정상 동작
+test.py 실행 시 -> OD failure
+
 ## Directory
 
 ```bash
